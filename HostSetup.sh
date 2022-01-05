@@ -188,7 +188,7 @@ then
 			tar xf gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf.tar.xz
 			# ToDo, test if this works. Might need to be set differently
 			export PATH=$PATH:${COMPILER_PATH}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin
-			echo "export PATH=$PATH:${COMPILER_PATH}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin" >> ~/.bashrc
+			echo 'export PATH=$PATH:'"${COMPILER_PATH}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin" >> ~/.bashrc
 		else
 			echo -e ${Green}"Linaro toolchain already copied. Using existing."${Reset}
 		fi
