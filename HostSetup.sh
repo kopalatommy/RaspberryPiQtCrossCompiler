@@ -1,13 +1,13 @@
 DEVICE=linux-rasp-pi4-v3d-g++
 IP=192.168.1.128
 CORES=$(nproc)
-DIRECTORY=/opt/RaspberryQt4
+DIRECTORY=/opt/RaspberryQt
 # Location where the cross compiler and sysroot are stored
-COMPILER_PATH=/opt/RaspberryQt4
+COMPILER_PATH=/opt/RaspberryQt
 QT_VER=5.15
 QT_SUB_VER=${QT_VER}.2
 # Directory where the cross compiled qt binaries will be placed
-PI_LOC=/usr/local/RaspberryQt4
+PI_LOC=/usr/local/RaspberryQt
 # Directory where the cross compiler will be installed
 COMP_LOC=$HOME/CrossCompilers/${DEVICE}/${QT_SUB_VER}
 
@@ -46,7 +46,7 @@ done
 
 echo "Current device: ${DEVICE}"
 
-if [ ${SKIP_DEVICE} != 1 ]
+if [[ ${SKIP_DEVICE} != 1 ]]
 then
 	read -p "Change device(Y/n)? " NEW_DEV
 
