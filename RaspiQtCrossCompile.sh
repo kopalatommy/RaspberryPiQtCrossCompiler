@@ -47,15 +47,15 @@ echo -e "${GREEN}Using $threads Threads${NC}"
 
 # Copy the PiSetup.sh script to the target device
 echo -e "${GREEN}Copying PiSetup.sh Script${NC}"
-scp -r RaspiQtCrossCompile_PiSetup.sh pi@$DeviceIP:~/
+scp RaspiQtCrossCompile_PiSetup.sh pi@$DeviceIP:~/
 
 # Run the PiSetup.sh script
 echo -e "${GREEN}Running PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP ./RaspiQtCrossCompile_PiSetup.sh
+ssh pi@$DeviceIP ~/RaspiQtCrossCompile_PiSetup.sh
 
 # Remove the PiSetup.sh script from the target device
 echo -e "${GREEN}Removing PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP rm RaspiQtCrossCompile_PiSetup.sh
+ssh pi@$DeviceIP rm ~/RaspiQtCrossCompile_PiSetup.sh
 
 # Set up host
 echo -e "${GREEN}Updating host${NC}"
