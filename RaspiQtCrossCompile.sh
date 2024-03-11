@@ -23,9 +23,8 @@ done
 
 # Log that starting script
 echo -e "${GREEN}Starting Cross Compile Qt${NC}"
-echo -e "${GREEN}Target Device IP: ${DeviceIP}${NC}"
-echo -e "${GREEN}Qt Version: ${QtVersion}${NC}"
-echo -e
+echo -e "Target Device IP: ${DeviceIP}"
+echo -e "Qt Version: ${QtVersion}"
 
 # Check if the raspberry pi is online
 echo -e "${GREEN}Checking if Raspberry Pi is online: ${DeviceIP}${NC}"
@@ -37,6 +36,10 @@ else
     exit
 fi
 
+# Copy ssh key to the target device
+echo -e "${GREEN}Copying SSH Key${NC}"
+ssh-copy-id pi@$DeviceIP
+
 # Get number of threads
 echo -e "${GREEN}Getting number of threads${NC}"
 threads=$(nproc)
@@ -44,15 +47,15 @@ echo -e "${GREEN}Using $threads Threads${NC}"
 
 # Copy the PiSetup.sh script to the target device
 echo -e "${GREEN}Copying PiSetup.sh Script${NC}"
-scp -r PiSetup.sh pi@$DeviceIP:~/
+scp -r RaspiQtCrossCompile_PiSetup.sh pi@$DeviceIP:~/
 
 # Run the PiSetup.sh script
 echo -e "${GREEN}Running PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP ./PiSetup.sh
+ssh pi@$DeviceIP ./RaspiQtCrossCompile_PiSetup.sh
 
 # Remove the PiSetup.sh script from the target device
 echo -e "${GREEN}Removing PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP rm PiSetup.sh
+ssh pi@$DeviceIP rm RaspiQtCrossCompile_PiSetup.sh
 
 # Set up host
 echo -e "${GREEN}Updating host${NC}"
