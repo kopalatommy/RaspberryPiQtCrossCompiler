@@ -11,38 +11,53 @@ CORES=$(nproc)
 # Log that starts the script
 echo -e "${GREEN}Starting the script${NC}"
 
-cd ~
+cd ~/SourceArchive
 # Download gcc sources
-mkdir -p gcc_all && cd gcc_all
-if [ ! -f binutils-2.40.tar.bz2 ] && [ ! -d binutils-2.40 ]; then
+if [ ! -f binutils-2.40.tar.bz2 ]; then
     wget https://ftpmirror.gnu.org/binutils/binutils-2.40.tar.bz2
 fi
-if [ ! -d binutils-2.40 ]; then
-    tar xf binutils-2.40.tar.bz2
-fi
-if [ ! -f glibc-2.36.tar.bz2 ] && [ ! -d glibc-2.36 ]; then
+if [ ! -f glibc-2.36.tar.bz2 ]; then
     wget https://ftpmirror.gnu.org/glibc/glibc-2.36.tar.bz2
 fi
-if [ ! -d glibc-2.36 ]; then
-    tar xf glibc-2.36.tar.bz2
-fi
-if [ ! -f gcc-12.2.0.tar.gz ] && [ ! -d gcc-12.2.0 ]; then
+if [ ! -f gcc-12.2.0.tar.gz ]; then
     wget https://ftpmirror.gnu.org/gcc/gcc-12.2.0/gcc-12.2.0.tar.gz
 fi
-if [ ! -d gcc-12.2.0 ]; then
-    tar xf gcc-12.2.0.tar.gz
-fi
-if [ ! -d linux ]; then
+if [ ! -d ~/SourceArchive/linux ]; then
+    cd ~/SourceArchive
     git clone --depth=1 https://github.com/raspberrypi/linux
 fi
+
+cd ~
+if [ -d ~/gcc_all ]; then
+    rm -rf ~/gcc_all
+fi
+mkdir -p gcc_all && cd gcc_all
+
+tar xf ~/SourceArchive/binutils-2.40.tar.bz2 && tar xf ~/SourceArchive/glibc-2.36.tar.bz2 && tar xf ~/SourceArchive/gcc-12.2.0.tar.gz
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to extract gcc sources${NC}"
+    exit 1
+fi
+
+ln -s ~/SourceArchive/linux .
 
 cd gcc-12.2.0
 contrib/download_prerequisites
 
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to download prereqs${NC}"
+    exit 1
+fi
+
 echo -e "${GREEN}Building binutils${NC}"
+if [ -d /opt/cross-pi-gcc ]; then
+    sudo rm -rf /opt/cross-pi-gcc
+else
+    export PATH=/opt/cross-pi-gcc/bin:$PATH
+fi  
 sudo mkdir -p /opt/cross-pi-gcc
 sudo chown $USER /opt/cross-pi-gcc
-export PATH=/opt/cross-pi-gcc/bin:$PATH
 
 # Copy the kernel headers
 # Check here for specific kernel version: https://www.raspberrypi.com/documentation/computers/linux_kernel.html
@@ -60,19 +75,30 @@ mkdir build-binutils && cd build-binutils
 make -j $CORES -s
 make install
 
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build binutils${NC}"
+fi
+
 # Patch /libsanitizer/asan/asan_linux.cpp
 echo -e "${GREEN}Patching asan_linux.cpp${NC}"
-sed -i.back '66i #ifndef PATH_MAX' gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
-sed -i.back '67i #define PATH_MAX 4096' gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
-sed -i.back '68i #endif' gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
+if ! grep -q "#define PATH_MAX" ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp; then
+    sed -i.back '67i #ifndef PATH_MAX' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
+    sed -i.back '68i #define PATH_MAX 4096' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
+    sed -i.back '69i #endif' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
+fi
 
-# Start partial build of gcc
+# Sta$? -ne 0rt partial build of gcc
 echo -e "${GREEN}Starting partial build of gcc${NC}"
 cd ~/gcc_all
 mkdir build-gcc && cd build-gcc
 ../gcc-12.2.0/configure --prefix=/opt/cross-pi-gcc --target=aarch64-linux-gnu --enable-languages=c,c++ --disable-multilib
 make -j $CORES -s all-gcc
 make install-gcc
+
+if [  ]; then
+    echo -e "${RED}Failed to build gcc step 1${NC}"
+    exit 1
+fi
 
 # Start partial build of glibc
 echo -e "${GREEN}Starting partial build of glibc${NC}"
@@ -82,6 +108,10 @@ mkdir build-glibc && cd build-glibc
 make install-bootstrap-headers=yes install-headers
 make -j${CORES} -s csu/subdir_lib
 install csu/crt1.o csu/crti.o csu/crtn.o /opt/cross-pi-gcc/aarch64-linux-gnu/lib
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build glibc step 2${NC}"
+    exit 1
+fi
 aarch64-linux-gnu-gcc -nostdlib -nostartfiles -shared -x c /dev/null -o /opt/cross-pi-gcc/aarch64-linux-gnu/lib/libc.so
 touch /opt/cross-pi-gcc/aarch64-linux-gnu/include/gnu/stubs.h
 
@@ -90,18 +120,30 @@ echo -e "${GREEN}Continuing with gcc${NC}"
 cd ~/gcc_all/build-gcc
 make -j${CORES} -s all-target-libgcc
 make install-target-libgcc
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build gcc step 3${NC}"
+    exit 1
+fi
 
 # Finish building glibc
 echo -e "${GREEN}Finishing building glibc${NC}"
 cd ~/gcc_all/build-glibc
 make -j${CORES} -s
 make install
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build glibc step 4${NC}"
+    exit 1
+fi
 
 # Finish building gcc
 echo -e "${GREEN}Finishing building gcc${NC}"
 cd ~/gcc_all/build-gcc
 make -j${CORES} -s
 make install
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build gcc step 5${NC}"
+    exit 1
+fi
 
 # Test the cross compiler
 echo -e "${GREEN}Testing the cross compiler${NC}"

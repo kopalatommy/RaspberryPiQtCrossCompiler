@@ -10,8 +10,8 @@ NC='\033[0m' # No Color
 DeviceIP="192.168.1.149"
 
 QtMajorVersion="6"
-QtMinorVersion="4"
-QtPatchVersion="0"
+QtMinorVersion="6"
+QtPatchVersion="2"
 QtVersion="$QtMajorVersion.$QtMinorVersion.$QtPatchVersion"
 
 while getopts ip: flag
@@ -51,16 +51,25 @@ scp RaspiQtCrossCompile_PiSetup.sh pi@$DeviceIP:~/
 
 # Run the PiSetup.sh script
 echo -e "${GREEN}Running PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP ~/RaspiQtCrossCompile_PiSetup.sh
+ssh pi@$DeviceIP ./RaspiQtCrossCompile_PiSetup.sh
+
+# Make sure success
+if [ $? -eq 0 ]
+then
+    echo -e "${GREEN}Finished device setup${NC}"
+else
+    echo -e "${RED}Failed to setup device${NC}"
+    exit 1
+fi
 
 # Remove the PiSetup.sh script from the target device
 echo -e "${GREEN}Removing PiSetup.sh Script${NC}"
-ssh pi@$DeviceIP rm ~/RaspiQtCrossCompile_PiSetup.sh
+ssh pi@$DeviceIP "rm ./RaspiQtCrossCompile_PiSetup.sh"
 
 # Set up host
 echo -e "${GREEN}Updating host${NC}"
 sudo apt update
-sudo apt upgrade
+#sudo apt upgrade
 
 # Install packages
 echo -e "${GREEN}Installing packages${NC}"
@@ -68,11 +77,14 @@ sudo apt-get -y install make build-essential libclang-dev ninja-build gcc git bi
 # Install other ueful packages
 sudo apt-get -y install ccache
 
+# Create archives cache
+if [ ! -d ~/SourceArchive ]; then
+    echo -e "${GREEN}Creating source cache folder${NC}"
+    mkdir ~/SourceArchive
+fi
+
 # Build CMake
-cd ~
-git clone https://github.com/Kitware/CMake.git
-cd CMake
-./bootstrap && make -j${threads} -s && sudo make install
+./RaspiQtCrossCompile_BuildCMake.sh
 
 # Make sure success
 if [ $? -eq 0 ]
@@ -87,7 +99,13 @@ fi
 echo -e "${GREEN}Building GCC${NC}"
 ./RaspiQtCrossCompile_BuildGcc.sh
 
-# Start building Qt
+if [ $? -eq 0 ]
+then
+    echo -e "${GREEN}GCC build Successful${NC}"
+else
+    echo -e "${RED}GCC Build Failed${NC}"
+    exit 1
+fi
 
 # Make directories
 cd ~
@@ -96,11 +114,24 @@ mkdir qt6 qt6/host qt6/pi qt6/host-build qt6/pi-build qt6/src
 
 # Download Qt source
 echo -e "${GREEN}Downloading Qt Source${NC}"
-cd qt6/src
-wget https://download.qt.io/official_releases/qt/${QtMajorVersion}.${QtMinorVersion}/${QtVersion}/single/qt-everywhere-src-${QtVersion}.tar.xz
-tar xf qt-everywhere-src-${QtVersion}.tar.xz
+cd ~/SourceArchive
+if [ ! -f qt-everywhere-src-${QtVersion}.tar.xz ]; then
+    wget https://download.qt.io/official_releases/qt/${QtMajorVersion}.${QtMinorVersion}/${QtVersion}/single/qt-everywhere-src-${QtVersion}.tar.xz
+fi
+cd ~/qt6/src/
+tar xf ~/SourceArchive/qt-everywhere-src-${QtVersion}.tar.xz 
+exit 0
 
 # Build Qt for host
 echo -e "${GREEN}Building Qt for Host${NC}"
-cd ~/qt6/host-build
-../src/qt-everywhere-src-${QtVersion}/configure -xplatform linux-g++ -release -opensource -confirm-license -prefix /usr/local/qt6 -nomake tests -nomake examples -skip qtwebengine -skip qtwebview -skip qtwebglplugin -skip qtwebsockets -skip qtwebchannel
+./RaspiQtCrossCompile_QtHostBuild.sh $QtMajorVersion $QtMinorVersion $QtPatchVersion
+
+# Make sure success
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}Successfully built qt for host device${NC}"
+else
+    echo -e "${RED}Failed to build qt for host device${NC}"
+    exit 1
+fi
+
+./RaspiQtCrossCompile_BuildQtForRaspi.sh $DeviceIP $QtMajorVersion $QtMinorVersion $QtPatchVersion
