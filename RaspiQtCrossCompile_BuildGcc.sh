@@ -95,7 +95,7 @@ mkdir build-gcc && cd build-gcc
 make -j $CORES -s all-gcc
 make install-gcc
 
-if [  ]; then
+if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build gcc step 1${NC}"
     exit 1
 fi
@@ -106,12 +106,8 @@ cd ~/gcc_all
 mkdir build-glibc && cd build-glibc
 ../glibc-2.36/configure --prefix=/opt/cross-pi-gcc/aarch64-linux-gnu --build=$MACHTYPE --host=aarch64-linux-gnu --target=aarch64-linux-gnu --with-headers=/opt/cross-pi-gcc/aarch64-linux-gnu/include --disable-multilib libc_cv_forced_unwind=yes
 make install-bootstrap-headers=yes install-headers
-make -j${CORES} -s csu/subdir_lib
+make -j8 csu/subdir_lib
 install csu/crt1.o csu/crti.o csu/crtn.o /opt/cross-pi-gcc/aarch64-linux-gnu/lib
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to build glibc step 2${NC}"
-    exit 1
-fi
 aarch64-linux-gnu-gcc -nostdlib -nostartfiles -shared -x c /dev/null -o /opt/cross-pi-gcc/aarch64-linux-gnu/lib/libc.so
 touch /opt/cross-pi-gcc/aarch64-linux-gnu/include/gnu/stubs.h
 
