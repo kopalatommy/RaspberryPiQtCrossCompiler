@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 
 threads=$(nproc)
 
-echo -e "${GREEN}Starting build CMake${CN}"
+echo -e "${GREEN}Starting build CMake${NC}"
 
 # Check if CMake exists
 if command -v cmake &> /dev/null
@@ -24,13 +24,20 @@ if [ -d CMake ]; then
     rm -rf CMake
 fi
 
-# Download source
-git clone https://github.com/Kitware/CMake.git
+cd ~/SourceArchive/
+if [ ! -d CMake ]; then
+    # Download source
+    git clone https://github.com/Kitware/CMake.git
+fi
+
+cd ~
+mkdir CMake
+
 # Build source
 cd CMake
-./bootstrap && make -j${threads} -s && sudo make install
+~/SourceArchive/CMake/bootstrap && make -j${threads} -s && sudo make install
 
-if [ $? -eq 0 ];
+if [ $? -eq 0 ]; then
     echo -e "#{GREEN}Successfully built CMake${NC}"
     exit 0
 else

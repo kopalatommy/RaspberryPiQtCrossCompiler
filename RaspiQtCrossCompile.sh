@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 
 # Varialbes used by the script
 # DeviceIP, the ip address of the target raspberry pi
-DeviceIP="192.168.1.149"
+DeviceIP="192.168.1.77"
 
 QtMajorVersion="6"
 QtMinorVersion="6"
@@ -77,6 +77,11 @@ sudo apt-get -y install make build-essential libclang-dev ninja-build gcc git bi
 # Install other ueful packages
 sudo apt-get -y install ccache
 
+# Set up install for node 20. The defualt version is 10 which is too old
+curl -sL https://deb.nodesource.com/setup_20.x | sudo bash -
+# Install the package
+sudo apt-get -y install nodejs
+
 # Create archives cache
 if [ ! -d ~/SourceArchive ]; then
     echo -e "${GREEN}Creating source cache folder${NC}"
@@ -120,7 +125,6 @@ if [ ! -f qt-everywhere-src-${QtVersion}.tar.xz ]; then
 fi
 cd ~/qt6/src/
 tar xf ~/SourceArchive/qt-everywhere-src-${QtVersion}.tar.xz 
-exit 0
 
 # Build Qt for host
 echo -e "${GREEN}Building Qt for Host${NC}"

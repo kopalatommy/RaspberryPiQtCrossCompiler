@@ -5,8 +5,11 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-# Get the number of cores to speed up the compilation
-CORES=$(nproc)
+# Extra, but not necessary
+sudo apt-get -y install help2man
+
+# Get the number of threads to speed up the compilation
+threads=$(nproc)
 
 # Log that starts the script
 echo -e "${GREEN}Starting the script${NC}"
@@ -23,7 +26,6 @@ if [ ! -f gcc-12.2.0.tar.gz ]; then
     wget https://ftpmirror.gnu.org/gcc/gcc-12.2.0/gcc-12.2.0.tar.gz
 fi
 if [ ! -d ~/SourceArchive/linux ]; then
-    cd ~/SourceArchive
     git clone --depth=1 https://github.com/raspberrypi/linux
 fi
 
@@ -62,9 +64,9 @@ sudo chown $USER /opt/cross-pi-gcc
 # Copy the kernel headers
 # Check here for specific kernel version: https://www.raspberrypi.com/documentation/computers/linux_kernel.html
 echo -e "${GREEN}Copying kernel headers${NC}"
-cd ~/gcc_all
-cd linux
+cd ~/gcc_all/linux
 KERNEL=kernel_2712
+export KERNEL=kernel_2712
 make ARCH=arm64 INSTALL_HDR_PATH=/opt/cross-pi-gcc/aarch64-linux-gnu headers_install
 
 # Start building binutils
@@ -72,7 +74,7 @@ echo -e "${GREEN}Building binutils${NC}"
 cd ~/gcc_all
 mkdir build-binutils && cd build-binutils
 ../binutils-2.40/configure --prefix=/opt/cross-pi-gcc --target=aarch64-linux-gnu --with-arch=armv8 --disable-multilib
-make -j $CORES -s
+make -j $threads -s
 make install
 
 if [ $? -ne 0 ]; then
@@ -92,7 +94,7 @@ echo -e "${GREEN}Starting partial build of gcc${NC}"
 cd ~/gcc_all
 mkdir build-gcc && cd build-gcc
 ../gcc-12.2.0/configure --prefix=/opt/cross-pi-gcc --target=aarch64-linux-gnu --enable-languages=c,c++ --disable-multilib
-make -j $CORES -s all-gcc
+make -j $threads -s all-gcc
 make install-gcc
 
 if [ $? -ne 0 ]; then
@@ -106,7 +108,7 @@ cd ~/gcc_all
 mkdir build-glibc && cd build-glibc
 ../glibc-2.36/configure --prefix=/opt/cross-pi-gcc/aarch64-linux-gnu --build=$MACHTYPE --host=aarch64-linux-gnu --target=aarch64-linux-gnu --with-headers=/opt/cross-pi-gcc/aarch64-linux-gnu/include --disable-multilib libc_cv_forced_unwind=yes
 make install-bootstrap-headers=yes install-headers
-make -j8 csu/subdir_lib
+make -j$threads csu/subdir_lib
 install csu/crt1.o csu/crti.o csu/crtn.o /opt/cross-pi-gcc/aarch64-linux-gnu/lib
 aarch64-linux-gnu-gcc -nostdlib -nostartfiles -shared -x c /dev/null -o /opt/cross-pi-gcc/aarch64-linux-gnu/lib/libc.so
 touch /opt/cross-pi-gcc/aarch64-linux-gnu/include/gnu/stubs.h
@@ -114,7 +116,7 @@ touch /opt/cross-pi-gcc/aarch64-linux-gnu/include/gnu/stubs.h
 # Do more with gcc
 echo -e "${GREEN}Continuing with gcc${NC}"
 cd ~/gcc_all/build-gcc
-make -j${CORES} -s all-target-libgcc
+make -j${threads} -s all-target-libgcc
 make install-target-libgcc
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build gcc step 3${NC}"
@@ -124,7 +126,7 @@ fi
 # Finish building glibc
 echo -e "${GREEN}Finishing building glibc${NC}"
 cd ~/gcc_all/build-glibc
-make -j${CORES} -s
+make -j${threads}
 make install
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build glibc step 4${NC}"
@@ -134,7 +136,7 @@ fi
 # Finish building gcc
 echo -e "${GREEN}Finishing building gcc${NC}"
 cd ~/gcc_all/build-gcc
-make -j${CORES} -s
+make -j${threads}
 make install
 if [ $? -ne 0 ]; then
     echo -e "${RED}Failed to build gcc step 5${NC}"

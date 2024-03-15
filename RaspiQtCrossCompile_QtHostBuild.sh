@@ -10,8 +10,8 @@ QtMinorVersion="$2"
 QtPatchVersion="$3"
 QtVersion="$QtMajorVersion.$QtMinorVersion.$QtPatchVersion"
 
-# Get the number of cores to speed up the compilation
-CORES=$(nproc)
+# Get the number of threads to speed up the compilation
+threads=$(nproc)
 
 # Log that starts the script
 echo -e "${GREEN}Starting Qt Host Build${NC}"

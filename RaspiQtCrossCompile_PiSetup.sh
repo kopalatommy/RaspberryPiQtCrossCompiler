@@ -5,8 +5,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-# Get the number of cores to speed up the compilation
-CORES=$(nproc)
+# Get the number of threads to speed up the compilation
+threads=$(nproc)
 
 # This scipt is entended for use with the raspberry pi when building Qt 6 for the raspberry pi 5
 
@@ -24,6 +24,7 @@ sudo apt-get install -y libboost-all-dev libudev-dev libinput-dev libts-dev libm
 sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libx11-dev freetds-dev libsqlite3-dev libpq-dev libiodbc2-dev firebird-dev libgst-dev libxext-dev libxcb1 libxcb1-dev libx11-xcb1 libx11-xcb-dev libxcb-keysyms1 libxcb-keysyms1-dev libxcb-image0 libxcb-image0-dev libxcb-shm0 libxcb-shm0-dev libxcb-icccm4 libxcb-icccm4-dev libxcb-sync1 libxcb-sync-dev libxcb-render-util0 libxcb-render-util0-dev libxcb-xfixes0-dev libxrender-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-glx0-dev libxi-dev libdrm-dev libxcb-xinerama0 libxcb-xinerama0-dev libatspi2.0-dev libxcursor-dev libxcomposite-dev libxdamage-dev libxss-dev libxtst-dev libpci-dev libcap-dev libxrandr-dev libdirectfb-dev libaudio-dev libxkbcommon-x11-dev gdbserver
 # Other nice packages
 sudo apt-get install -y git vim htop jq ccache
+sudo apt-get install -y libdouble-conversion-dev
 
 # Make the installation directory
 echo -e "${GREEN}Making installation directory...${NC}"
