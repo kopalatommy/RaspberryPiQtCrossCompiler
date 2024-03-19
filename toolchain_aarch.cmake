@@ -55,6 +55,7 @@ endfunction()
 
 # Fix missing includes
 include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
+include_directories(${TARGET_SYSROOT}/usr/include)
 
 set(XCB_PATH_VARIABLE ${TARGET_SYSROOT})
 
