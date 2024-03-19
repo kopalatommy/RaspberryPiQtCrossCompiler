@@ -19,6 +19,6 @@ echo -e "${GREEN}Starting Qt Host Build${NC}"
 # Build Qt for host
 echo -e "${GREEN}Building Qt for Host${NC}"
 cd $HOME/qt6/host-build/
-cmake ../src/qtbase-everywhere-src-${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}/ -GNinja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$HOME/qt6/host
+cmake ../src/qt-everywhere-src-${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}/ -GNinja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$HOME/qt6/host
 cmake --build . --parallel $threads
 cmake --install .

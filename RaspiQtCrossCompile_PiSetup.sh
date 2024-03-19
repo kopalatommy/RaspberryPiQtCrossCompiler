@@ -25,6 +25,7 @@ sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libx11-dev
 # Other nice packages
 sudo apt-get install -y git vim htop jq ccache
 sudo apt-get install -y libdouble-conversion-dev
+$ pip install html5lib
 
 # Make the installation directory
 echo -e "${GREEN}Making installation directory...${NC}"

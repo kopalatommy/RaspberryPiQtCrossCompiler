@@ -6,13 +6,13 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 # Extra, but not necessary
-sudo apt-get -y install help2man
+sudo apt-get -y install help2man gettext
 
 # Get the number of threads to speed up the compilation
 threads=$(nproc)
 
 # Log that starts the script
-echo -e "${GREEN}Starting the script${NC}"
+echo -e "${GREEN}Starting build gcc cross compiler${NC}"
 
 cd ~/SourceArchive
 # Download gcc sources
@@ -64,7 +64,10 @@ sudo chown $USER /opt/cross-pi-gcc
 # Copy the kernel headers
 # Check here for specific kernel version: https://www.raspberrypi.com/documentation/computers/linux_kernel.html
 echo -e "${GREEN}Copying kernel headers${NC}"
+
 cd ~/gcc_all/linux
+# Make sure there are no changes to the repo
+# git stash
 KERNEL=kernel_2712
 export KERNEL=kernel_2712
 make ARCH=arm64 INSTALL_HDR_PATH=/opt/cross-pi-gcc/aarch64-linux-gnu headers_install
@@ -74,7 +77,7 @@ echo -e "${GREEN}Building binutils${NC}"
 cd ~/gcc_all
 mkdir build-binutils && cd build-binutils
 ../binutils-2.40/configure --prefix=/opt/cross-pi-gcc --target=aarch64-linux-gnu --with-arch=armv8 --disable-multilib
-make -j $threads -s
+make -j $threads
 make install
 
 if [ $? -ne 0 ]; then
@@ -84,6 +87,7 @@ fi
 # Patch /libsanitizer/asan/asan_linux.cpp
 echo -e "${GREEN}Patching asan_linux.cpp${NC}"
 if ! grep -q "#define PATH_MAX" ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp; then
+    echo "Patching asan_linux"
     sed -i.back '67i #ifndef PATH_MAX' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
     sed -i.back '68i #define PATH_MAX 4096' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
     sed -i.back '69i #endif' ../gcc-12.2.0/libsanitizer/asan/asan_linux.cpp
@@ -94,7 +98,7 @@ echo -e "${GREEN}Starting partial build of gcc${NC}"
 cd ~/gcc_all
 mkdir build-gcc && cd build-gcc
 ../gcc-12.2.0/configure --prefix=/opt/cross-pi-gcc --target=aarch64-linux-gnu --enable-languages=c,c++ --disable-multilib
-make -j $threads -s all-gcc
+make -j $threads all-gcc
 make install-gcc
 
 if [ $? -ne 0 ]; then

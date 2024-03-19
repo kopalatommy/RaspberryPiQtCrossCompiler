@@ -7,12 +7,18 @@ NC='\033[0m' # No Color
 
 # Varialbes used by the script
 # DeviceIP, the ip address of the target raspberry pi
-DeviceIP="192.168.1.77"
+DeviceIP="192.168.1.149"
+export DeviceIP="192.168.1.149"
 
 QtMajorVersion="6"
 QtMinorVersion="6"
 QtPatchVersion="2"
 QtVersion="$QtMajorVersion.$QtMinorVersion.$QtPatchVersion"
+
+export QtMajorVersion="6"
+export QtMinorVersion="6"
+export QtPatchVersion="2"
+export QtVersion="$QtMajorVersion.$QtMinorVersion.$QtPatchVersion"
 
 while getopts ip: flag
 do
@@ -43,6 +49,7 @@ ssh-copy-id pi@$DeviceIP
 # Get number of threads
 echo -e "${GREEN}Getting number of threads${NC}"
 threads=$(nproc)
+export threads=$(nproc)
 echo -e "${GREEN}Using $threads Threads${NC}"
 
 # Copy the PiSetup.sh script to the target device
@@ -76,6 +83,7 @@ echo -e "${GREEN}Installing packages${NC}"
 sudo apt-get -y install make build-essential libclang-dev ninja-build gcc git bison python3 gperf pkg-config libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev libatspi2.0-dev libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev build-essential gawk git texinfo bison file wget libssl-dev gdbserver gdb-multiarch libxcb-cursor-dev
 # Install other ueful packages
 sudo apt-get -y install ccache
+$ pip install html5lib
 
 # Set up install for node 20. The defualt version is 10 which is too old
 curl -sL https://deb.nodesource.com/setup_20.x | sudo bash -
@@ -89,6 +97,7 @@ if [ ! -d ~/SourceArchive ]; then
 fi
 
 # Build CMake
+cd ~/RaspberryPiQtCrossCompiler
 ./RaspiQtCrossCompile_BuildCMake.sh
 
 # Make sure success
@@ -102,7 +111,8 @@ fi
 
 # Start building gcc
 echo -e "${GREEN}Building GCC${NC}"
-./RaspiQtCrossCompile_BuildGcc.sh
+cd ~/RaspberryPiQtCrossCompiler
+./RaspiQtCrossCompile_BuildGccV2.sh
 
 if [ $? -eq 0 ]
 then
@@ -128,6 +138,7 @@ tar xf ~/SourceArchive/qt-everywhere-src-${QtVersion}.tar.xz
 
 # Build Qt for host
 echo -e "${GREEN}Building Qt for Host${NC}"
+cd ~/RaspberryPiQtCrossCompiler
 ./RaspiQtCrossCompile_QtHostBuild.sh $QtMajorVersion $QtMinorVersion $QtPatchVersion
 
 # Make sure success
@@ -138,4 +149,5 @@ else
     exit 1
 fi
 
+cd ~/RaspberryPiQtCrossCompiler
 ./RaspiQtCrossCompile_BuildQtForRaspi.sh $DeviceIP $QtMajorVersion $QtMinorVersion $QtPatchVersion

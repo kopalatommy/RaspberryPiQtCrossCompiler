@@ -28,6 +28,9 @@ cd ~/SourceArchive/
 if [ ! -d CMake ]; then
     # Download source
     git clone https://github.com/Kitware/CMake.git
+else
+    cd ~/SourceArchive/CMake
+    # git stash
 fi
 
 cd ~
