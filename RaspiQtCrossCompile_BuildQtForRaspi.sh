@@ -34,7 +34,7 @@ cp toolchain_aarch.cmake ~/qt6/toolchain.cmake
 cd $HOME/qt6/pi-build
 # cmake ../src/qt-everywhere-src-$QtVersion/ -GNinja -DCMAKE_BUILD_TYPE=Release -DINPUT_opengl=es2 -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DQT_HOST_PATH=$HOME/qt6/host -DCMAKE_STAGING_PREFIX=$HOME/qt6/pi -DCMAKE_INSTALL_PREFIX=/usr/local/qt6 -DCMAKE_TOOLCHAIN_FILE=$HOME/qt6/toolchain.cmake -DQT_QMAKE_TARGET_MKSPEC=devices/linux-rasp-pi4-aarch64 -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
 # cmake ../src/qt-everywhere-src-$QtVersion/ -GNinja -DCMAKE_BUILD_TYPE=Release -DINPUT_opengl=es2 -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DQT_HOST_PATH=$HOME/qt6/host -DCMAKE_STAGING_PREFIX=$HOME/qt6/pi -DCMAKE_INSTALL_PREFIX=/usr/local/qt6 -DCMAKE_TOOLCHAIN_FILE=$HOME/qt6/toolchain.cmake -DQT_QMAKE_TARGET_MKSPEC=devices/linux-rasp-pi4-aarch64 -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
-../qt6/src/qt-everywhere-src-$QtVersion/configure -release -opengl es2 -nomake examples -nomake tests -qt-host-path $HOME/qt6/host -extprefix $HOME/qt6/pi -prefix /usr/local/qt6 -device linux-rasp-pi4-aarch64 -device-option CROSS_COMPILE=/opt/cross-pi-gcc/bin/aarch64-linux-gnu- -- -DCMAKE_TOOLCHAIN_FILE=$HOME/qt6/toolchain.cmake -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
+../src/qt-everywhere-src-$QtVersion/configure -release -opengl es2 -nomake examples -nomake tests -qt-host-path $HOME/qt6/host -extprefix $HOME/qt6/pi -prefix /usr/local/qt6 -device linux-rasp-pi4-aarch64 -device-option CROSS_COMPILE=/opt/cross-pi-gcc/bin/aarch64-linux-gnu- -- -DCMAKE_TOOLCHAIN_FILE=$HOME/qt6/toolchain.cmake -DQT_FEATURE_xcb=ON -DFEATURE_xcb_xlib=ON -DQT_FEATURE_xlib=ON
 cmake --build . --parallel $threads
 cmake --install .
 
@@ -42,6 +42,6 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}Successfully built Qt${NC}"
     exit 0
 else 
-    echo -e "${RED}Fail to build Qt${NC}"
+    echo -e "${RED}Failed to build Qt${NC}"
     exit 1
 fi

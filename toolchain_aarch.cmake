@@ -53,6 +53,9 @@ function(cmake_initialize_per_config_variable _PREFIX _DOCSTRING)
   _cmake_initialize_per_config_variable(${ARGV})
 endfunction()
 
+# Fix missing includes
+include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
+
 set(XCB_PATH_VARIABLE ${TARGET_SYSROOT})
 
 set(GL_INC_DIR ${TARGET_SYSROOT}/usr/include)
