@@ -83,7 +83,8 @@ set(Libdrm_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/${TARGET_ARCHITECTURE}/libdrm.so
 set(XCB_XCB_INCLUDE_DIR ${GL_INC_DIR})
 set(XCB_XCB_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/${TARGET_ARCHITECTURE}/libxcb.so)
 
-include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
+target_include_directories(${TARGET_SYSROOT}/usr/include)
+target_include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
 
 list(APPEND CMAKE_LIBRARY_PATH ${CMAKE_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE})
 list(APPEND CMAKE_PREFIX_PATH "/usr/lib/${TARGET_ARCHITECTURE}/cmake")
