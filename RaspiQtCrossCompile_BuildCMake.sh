@@ -7,7 +7,11 @@ NC='\033[0m' # No Color
 
 threads=$(nproc)
 
+BUILD_LOC=$1
+SOURCE_CACHE_LOC=$2
+
 echo -e "${GREEN}Starting build CMake${NC}"
+echo -e "Build Loc: ${BUILD_LOC}"
 
 # Check if CMake exists
 if command -v cmake &> /dev/null
@@ -17,28 +21,28 @@ then
 fi
 
 # Download source files
-cd ~
+cd $BUILD_LOC
 # Delete old version if exists
 if [ -d CMake ]; then
     echo -e "${GREEN}Deleting old CMake source${NC}"
     rm -rf CMake
 fi
 
-cd ~/SourceArchive/
+cd ${SOURCE_CACHE_LOC}
 if [ ! -d CMake ]; then
     # Download source
     git clone https://github.com/Kitware/CMake.git
 else
-    cd ~/SourceArchive/CMake
+    cd ${SOURCE_CACHE_LOC}/CMake
     # git stash
 fi
 
-cd ~
+cd ${BUILD_LOC}
 mkdir CMake
 
 # Build source
 cd CMake
-~/SourceArchive/CMake/bootstrap && make -j${threads} -s && sudo make install
+${SOURCE_CACHE_LOC}/CMake/bootstrap && make -j${threads} -s && sudo make install
 
 if [ $? -eq 0 ]; then
     echo -e "#{GREEN}Successfully built CMake${NC}"

@@ -6,6 +6,9 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'  # Blue
 NC='\033[0m' # No Color
 
+BUILD_LOC=$1
+SOURCE_CACHE_LOC=$2
+
 # Extra, but not necessary
 sudo apt-get -y install help2man gettext
 
@@ -18,7 +21,7 @@ echo -e "${GREEN}Starting build gcc cross compiler${NC}"
 download_sources () {
     echo -e "${GREEN}Starting download sources${NC}"
 
-    cd ~/SourceArchive
+    cd ${SOURCE_CACHE_LOC}
     # Download gcc sources
     if [ ! -f binutils-2.40.tar.bz2 ]; then
         echo -e "${BLUE}Downloading binutils source${NC}"
@@ -50,7 +53,7 @@ download_sources () {
             return 1
         fi
     fi
-    if [ ! -d ~/SourceArchive/linux ]; then
+    if [ ! -d ${SOURCE_CACHE_LOC}/linux ]; then
     echo -e "${BLUE}Downloading rasp linux source${NC}"
         git clone --depth=1 https://github.com/raspberrypi/linux
 
@@ -67,12 +70,12 @@ download_sources () {
 
 extract_sources () {
     echo -e "${GREEN}Starting extract sources${NC}"
-    cd ~
+    cd ${BUILD_LOC}
 
     # If there is an existing build dir, delete it
-    if [ -d ~/gcc_all ]; then
+    if [ -d ${BUILD_LOC}/gcc_all ]; then
         echo -e "${BLUE}Removing old gcc build dir${NC}"
-        rm -rf ~/gcc_all
+        rm -rf ${BUILD_LOC}/gcc_all
 
         # Handle error if applicable
         if [ $? -ne 0 ]; then
@@ -98,7 +101,7 @@ extract_sources () {
     mkdir -p gcc_all && cd gcc_all
 
     echo -e "${BLUE}Starting extract binutils${NC}"
-    tar xf ~/SourceArchive/binutils-2.40.tar.bz2
+    tar xf ${SOURCE_CACHE_LOC}/binutils-2.40.tar.bz2
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to extract bin utils source${NC}"
@@ -106,7 +109,7 @@ extract_sources () {
     fi
 
     echo -e "${BLUE}Starting extract glibc${NC}"
-    tar xf ~/SourceArchive/glibc-2.36.tar.bz2
+    tar xf ${SOURCE_CACHE_LOC}/glibc-2.36.tar.bz2
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to extract glibc source${NC}"
@@ -114,7 +117,7 @@ extract_sources () {
     fi
 
     echo -e "${BLUE}Starting extract gcc${NC}"
-    tar xf ~/SourceArchive/gcc-12.2.0.tar.gz
+    tar xf ${SOURCE_CACHE_LOC}/gcc-12.2.0.tar.gz
 
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to extract gcc source${NC}"
@@ -122,7 +125,7 @@ extract_sources () {
     fi
 
     echo -e "${BLUE}Creating sym link to linux dir${NC}"
-    ln -s ~/SourceArchive/linux/ ~/gcc_all/linux
+    ln -s ${SOURCE_CACHE_LOC}/linux/ ${BUILD_LOC}/gcc_all/linux
 
     echo -e "${GREEN}Finished extracting gcc sources${NC}"
     return 0
@@ -153,7 +156,7 @@ create_install_dir () {
 download_gcc_prereqs () {
     echo -e "${GREEN}Starting download prereqs${NC}"
 
-    cd ~/gcc_all/gcc-12.2.0
+    cd ${BUILD_LOC}/gcc_all/gcc-12.2.0
 
     contrib/download_prerequisites
 
@@ -171,7 +174,7 @@ download_gcc_prereqs () {
 install_kernel_headers () {
     echo -e "${GREEN}Starting install rpi kernel headers${NC}"
 
-    cd ~/gcc_all/linux
+    cd ${BUILD_LOC}/gcc_all/linux
 
     KERNEL=kernel_2712
     echo -e "${BLUE}Setting kernel to ${KERNEL}${NC}"
@@ -193,7 +196,7 @@ install_kernel_headers () {
 build_binutils_step_1 () {
     echo -e "${GREEN}Starting build binutils: step 1${NC}"
 
-    cd ~/gcc_all
+    cd ${BUILD_LOC}/gcc_all
 
     echo -e "${BLUE}Making binutils build dir${NC}"
 
@@ -250,7 +253,7 @@ patch_asan_linux () {
 build_gcc_step_2 () {
     echo -e "${GREEN}Starting build gcc: step 2${NC}"
 
-    cd ~/gcc_all
+    cd ${BUILD_LOC}/gcc_all
 
     echo -e "${BLUE}Making build dir${NC}"
 
@@ -291,7 +294,7 @@ build_gcc_step_2 () {
 continue_gcc_step_3 () {
     echo -e "${GREEN}Starting build of glibc: step 3${NC}"
 
-    cd ~/gcc_all
+    cd ${BUILD_LOC}/gcc_all
 
     echo -e "${BLUE}Making build dirs${NC}"
 
@@ -350,7 +353,7 @@ continue_gcc_step_3 () {
 continue_build_gcc_step_4 () {
     echo -e "${GREEN}Continuing build of gcc: step 4${NC}"
 
-    cd ~/gcc_all/build-gcc
+    cd ${BUILD_LOC}/gcc_all/build-gcc
 
     echo -e "${BLUE}make -j${threads} -s all-target-libgcc${NC}"
     make -j${threads} -s all-target-libgcc
@@ -376,7 +379,7 @@ continue_build_gcc_step_4 () {
 finish_build_glibc_step_5 () {
     echo -e "${GREEN}Finishing build of glibc: step 5${NC}"
 
-    cd ~/gcc_all/build-glibc
+    cd ${BUILD_LOC}/gcc_all/build-glibc
 
     echo -e "${BLUE}Building glibc${NC}"
     echo -e "${BLUE}make -j${threads}${NC}"
@@ -404,7 +407,7 @@ finish_build_glibc_step_5 () {
 finish_build_gcc_step_6 () {
     echo -e "${GREEN}Finishing build of gcc: step 6${NC}"
 
-    cd ~/gcc_all/build-gcc
+    cd ${BUILD_LOC}/gcc_all/build-gcc
 
     echo -e "${BLUE}Making gcc${NC}"
     echo -e "${BLUE}make -j${threads}${NC}"

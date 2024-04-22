@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # You should change location of sysroot to your needs.
-set(TARGET_SYSROOT $ENV{HOME}/rpi-sysroot)
+set(TARGET_SYSROOT $ENV{BUILD_LOC}/rpi-sysroot)
 set(TARGET_ARCHITECTURE aarch64-linux-gnu)
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 
@@ -16,12 +16,12 @@ set(ENV{PKG_CONFIG_SYSROOT_DIR} ${CMAKE_SYSROOT})
 set(CMAKE_C_COMPILER /opt/cross-pi-gcc/bin/${TARGET_ARCHITECTURE}-gcc)
 set(CMAKE_CXX_COMPILER /opt/cross-pi-gcc/bin/${TARGET_ARCHITECTURE}-g++)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem=/usr/include -isystem=/usr/local/include -isystem=/usr/include/${TARGET_ARCHITECTURE} -I${TARGET_SYSROOT}/usr/include -I{TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem=/usr/include -isystem=/usr/local/include -isystem=/usr/include/${TARGET_ARCHITECTURE} -I${TARGET_SYSROOT}/usr/include -I${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 set(QT_COMPILER_FLAGS "-march=armv8.2")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
-set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=$HOME/qt6/pi/lib")
+set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=$$ENV{BUILD_LOC}/qt6/pi/lib")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -53,10 +53,6 @@ function(cmake_initialize_per_config_variable _PREFIX _DOCSTRING)
   _cmake_initialize_per_config_variable(${ARGV})
 endfunction()
 
-# Fix missing includes
-include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
-include_directories(${TARGET_SYSROOT}/usr/include)
-
 set(XCB_PATH_VARIABLE ${TARGET_SYSROOT})
 
 set(GL_INC_DIR ${TARGET_SYSROOT}/usr/include)
@@ -82,9 +78,6 @@ set(Libdrm_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/${TARGET_ARCHITECTURE}/libdrm.so
 
 set(XCB_XCB_INCLUDE_DIR ${GL_INC_DIR})
 set(XCB_XCB_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/${TARGET_ARCHITECTURE}/libxcb.so)
-
-target_include_directories(${TARGET_SYSROOT}/usr/include)
-target_include_directories(${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE})
 
 list(APPEND CMAKE_LIBRARY_PATH ${CMAKE_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE})
 list(APPEND CMAKE_PREFIX_PATH "/usr/lib/${TARGET_ARCHITECTURE}/cmake")
