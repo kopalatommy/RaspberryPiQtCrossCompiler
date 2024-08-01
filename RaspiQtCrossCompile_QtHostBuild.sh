@@ -11,6 +11,7 @@ QtPatchVersion="$3"
 QtVersion="$QtMajorVersion.$QtMinorVersion.$QtPatchVersion"
 
 BUILD_LOC=$4
+SOURCE_CACHE_LOC=$5
 
 # Get the number of threads to speed up the compilation
 threads=$(nproc)
@@ -20,7 +21,7 @@ echo -e "${GREEN}Starting Qt Host Build${NC}"
 
 # Build Qt for host
 echo -e "${GREEN}Building Qt for Host${NC}"
-cd $BUILD_LOC/qt6/host-build/
-cmake ../src/qt-everywhere-src-${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}/ -GNinja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=${BUILD_LOC}/qt6/host -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+cd $BUILD_LOC/host-build/
+cmake $SOURCE_CACHE_LOC/qt-everywhere-src-${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}/ -GNinja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=${BUILD_LOC}/host -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 cmake --build . --parallel $threads
 cmake --install .
