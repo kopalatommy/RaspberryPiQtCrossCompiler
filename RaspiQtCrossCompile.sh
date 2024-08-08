@@ -7,8 +7,8 @@ NC='\033[0m' # No Color
 
 # Varialbes used by the script
 # DeviceIP, the ip address of the target raspberry pi
-DeviceIP="192.168.1.102"
-export DeviceIP="192.168.1.102"
+DeviceIP="192.168.1.133"
+export DeviceIP="192.168.1.133"
 
 account=orangepi
 

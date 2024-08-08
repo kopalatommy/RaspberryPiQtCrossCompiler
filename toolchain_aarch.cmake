@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
 # You should change location of sysroot to your needs.
-set(TARGET_SYSROOT $ENV{BUILD_LOC}/rpi-sysroot)
+set(TARGET_SYSROOT $ENV{TARGET_SYSROOT})
 set(TARGET_ARCHITECTURE aarch64-linux-gnu)
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 
@@ -19,9 +19,9 @@ set(CMAKE_CXX_COMPILER /opt/cross-pi-gcc/bin/${TARGET_ARCHITECTURE}-g++)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem=/usr/include -isystem=/usr/local/include -isystem=/usr/include/${TARGET_ARCHITECTURE} -I${TARGET_SYSROOT}/usr/include -I${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
-set(QT_COMPILER_FLAGS "-march=armv8.2")
+set(QT_COMPILER_FLAGS "-march=armv8.2-a")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
-set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=$$ENV{BUILD_LOC}/pi/lib")
+set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=$ENV{BUILD_LOC}/orangepi/lib")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)

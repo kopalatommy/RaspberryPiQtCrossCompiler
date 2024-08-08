@@ -19,7 +19,7 @@ set(CMAKE_CXX_COMPILER /opt/cross-pi-gcc/bin/${TARGET_ARCHITECTURE}-g++)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem=/usr/include -isystem=/usr/local/include -isystem=/usr/include/${TARGET_ARCHITECTURE} -I${TARGET_SYSROOT}/usr/include -I${TARGET_SYSROOT}/usr/include/${TARGET_ARCHITECTURE}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
-set(QT_COMPILER_FLAGS "-march=armv8-a")
+set(QT_COMPILER_FLAGS "-march=armv8.2-a")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
 set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-rpath-link=${TARGET_SYSROOT}/usr/lib/${TARGET_ARCHITECTURE} -Wl,-rpath-link=${ENV{BUILD_LOC}}/pi/lib")
 

@@ -23,5 +23,25 @@ echo -e "${GREEN}Starting Qt Host Build${NC}"
 echo -e "${GREEN}Building Qt for Host${NC}"
 cd $BUILD_LOC/host-build/
 cmake $SOURCE_CACHE_LOC/qt-everywhere-src-${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}/ -GNinja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_EXAMPLES=OFF -DQT_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=${BUILD_LOC}/host -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+# Exit if failed
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to configure Qt${NC}"
+    exit 1
+fi
+
 cmake --build . --parallel $threads
+
+# Exit if failed
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to build Qt${NC}"
+    exit 1
+fi
+
 cmake --install .
+
+# Exit if failed
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to install Qt${NC}"
+    exit 1
+fi
