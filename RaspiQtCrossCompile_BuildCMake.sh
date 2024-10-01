@@ -28,11 +28,14 @@ if [ -d CMake ]; then
     rm -rf CMake
 fi
 
+echo -e "${GREEN}Downloading CMake source${NC}"
 cd ${SOURCE_CACHE_LOC}
 if [ ! -d CMake ]; then
     # Download source
     git clone https://github.com/Kitware/CMake.git
+    echo -e "${BLUE}Finished downloading CMake source${NC}"
 else
+    echo -e "${BLUE}CMake source already in cache${NC}"
     cd ${SOURCE_CACHE_LOC}/CMake
     # git stash
 fi
@@ -45,7 +48,7 @@ cd CMake
 ${SOURCE_CACHE_LOC}/CMake/bootstrap && make -j${threads} -s && sudo make install
 
 if [ $? -eq 0 ]; then
-    echo -e "#{GREEN}Successfully built CMake${NC}"
+    echo -e "${GREEN}Successfully built CMake${NC}"
     exit 0
 else
     echo -e "${RED}Failed to build CMake${NC}"

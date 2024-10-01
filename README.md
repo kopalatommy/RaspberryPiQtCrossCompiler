@@ -17,7 +17,7 @@ This project is designed to make the process of cross compiling Qt as simple as 
 
 1. Clone the repository
 2. Connect the Raspberry Pi and Compute to the same 
-3. Edit the DeviceIP and QtVersion fields
+3. Create a build.conf file. Use exampleBuild.conf
 3. ./RaspiQtCrossCompile.sh
 
 ## Usage

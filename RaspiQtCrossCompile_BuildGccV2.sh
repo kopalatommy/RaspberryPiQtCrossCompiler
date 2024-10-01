@@ -18,6 +18,11 @@ threads=$(nproc)
 # Log that starts the script
 echo -e "${GREEN}Starting build gcc cross compiler${NC}"
 
+if [ -f /opt/cross-pi-gcc/bin/aarch64-linux-gnu-gcc ]; then
+    echo -e "${GREEN}Cross compiler already exists${NC}"
+    exit 0
+fi
+
 download_sources () {
     echo -e "${GREEN}Starting download sources${NC}"
 
