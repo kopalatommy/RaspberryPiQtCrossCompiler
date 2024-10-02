@@ -55,6 +55,7 @@ fi
 QtMajorVersion=${array[0]}
 QtMinorVersion=${array[1]}
 QtPatchVersion=${array[2]}
+QtVersion="${QtMajorVersion}.${QtMinorVersion}.${QtPatchVersion}"
 
 # The base path determines where the build will be placed: Ex: /home/tommy/Qt_6_6_2
 # If the base path was not set using the conf file, generate it
