@@ -45,7 +45,7 @@ mkdir CMake
 
 # Build source
 cd CMake
-${SOURCE_CACHE_LOC}/CMake/bootstrap && make -j${threads} -s && sudo make install
+${SOURCE_CACHE_LOC}/CMake/bootstrap && make -j${threads} -s && make install
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Successfully built CMake${NC}"

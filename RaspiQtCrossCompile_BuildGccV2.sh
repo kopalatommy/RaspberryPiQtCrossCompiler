@@ -10,7 +10,7 @@ BUILD_LOC=$1
 SOURCE_CACHE_LOC=$2
 
 # Extra, but not necessary
-sudo apt-get -y install help2man gettext
+apt-get -y install help2man gettext
 
 # Get the number of threads to speed up the compilation
 threads=$(nproc)
@@ -92,7 +92,7 @@ extract_sources () {
         if [ -d /opt/cross-pi-gcc ]; then
             echo -e "${BLUE}Removing old gcc dir${NC}"
             
-            sudo rm -rf /opt/cross-pi-gcc
+            rm -rf /opt/cross-pi-gcc
 
             # Handle error if applicable
             if [ $? -ne 0 ]; then
@@ -139,16 +139,16 @@ extract_sources () {
 create_install_dir () {
     echo -e "${GREEN}Creating install dir${NC}"
 
-    echo -e "${BLUE}sudo mkdir -p /opt/cross-pi-gcc${NC}"
-    sudo mkdir -p /opt/cross-pi-gcc
+    echo -e "${BLUE}mkdir -p /opt/cross-pi-gcc${NC}"
+    mkdir -p /opt/cross-pi-gcc
 
     if [ $? -ne 0 ]; then 
         echo -e "${RED}Failed to make install dir${NC}"
         return 1
     fi
 
-    echo -e "${BLUE}sudo chown $USER /opt/cross-pi-gcc${NC}"
-    sudo chown $USER /opt/cross-pi-gcc
+    echo -e "${BLUE}chown $USER /opt/cross-pi-gcc${NC}"
+    chown $USER /opt/cross-pi-gcc
 
     echo -e "${BLUE}Adding to path${NC}"
     export PATH=/opt/cross-pi-gcc/bin:$PATH

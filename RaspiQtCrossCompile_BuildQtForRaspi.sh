@@ -25,7 +25,7 @@ account=$6
 
 echo "Build Loc: ${BUILD_LOC}"
 
-sudo apt-get install -y libdouble-conversion-dev
+apt-get install -y libdouble-conversion-dev
 
 # Make the build dir
 mkdir -p ${BUILD_LOC}/${BUILD_LABEL}
