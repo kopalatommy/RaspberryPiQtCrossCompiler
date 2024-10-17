@@ -524,3 +524,7 @@ fi
 # Test the cross compiler
 echo -e "${GREEN}Testing the cross compiler${NC}"
 aarch64-linux-gnu-gcc --version
+
+# Clean up
+cd ${BUILD_LOC}
+rm -rf gcc_all

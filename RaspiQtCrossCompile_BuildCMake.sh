@@ -49,8 +49,12 @@ ${SOURCE_CACHE_LOC}/CMake/bootstrap && make -j${threads} -s && make install
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Successfully built CMake${NC}"
-    exit 0
+    # exit 0
 else
     echo -e "${RED}Failed to build CMake${NC}"
     exit 1
 fi
+
+# Clean up
+cd $BUILD_LOC
+rm -rf CMake

@@ -60,8 +60,12 @@ cmake --install .
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Successfully built Qt${NC}"
-    exit 0
+    #exit 0
 else 
     echo -e "${RED}Failed to build Qt${NC}"
     exit 1
 fi
+
+# Clean up
+cd $BUILD_LOC
+rm -rf ${BUILD_LABEL}-build
