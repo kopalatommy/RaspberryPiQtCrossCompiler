@@ -16,7 +16,7 @@ echo -e "${GREEN}Starting Pi setup script...${NC}"
 # Update the device
 echo -e "${GREEN}Updating device...${NC}"
 sudo apt update
-sudo apt upgrade -y
+#sudo apt upgrade -y
 
 # Install the necessary packages on the raspberry pi
 echo -e "${GREEN}Installing necessary packages...${NC}"
