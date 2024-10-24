@@ -182,6 +182,19 @@ download_qt_src () {
     # If the source archive doesn't exist, download it
     if [ ! -f qt-everywhere-src-$4.tar.xz ]; then
         wget https://download.qt.io/official_releases/qt/$2.$3/$4/single/qt-everywhere-src-$4.tar.xz
+
+        # If the download failed, fallback to downloading from git and renaming to the expected value
+        # The other version is prefered b/c it is much quicker
+        if [ $? -neq 0 ]; then
+            echo -e "${BLUE}Failed to download archive, falling back to git${NC}"
+            # If the directory doesn't exist, start cloning the repo
+            if [ ! -d qt-everywhere-src-$4 ]; then
+                # Using --single-branch to make quicker clone, --recursive b/c each submodule is a link and needs to be pulled
+                git clone --branch ${QtVersion} --single-branch --recursive git@github.com:qt/qt5.git
+                # Rename to expected name
+                mv qt5 qt-everywhere-src-$4
+            fi
+        fi
     fi
 
     # If the archive hasn't been extracted, extract it
