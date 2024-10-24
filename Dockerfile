@@ -18,3 +18,6 @@ COPY ${deviceLabel}-sysroot ${deviceLabel}-sysroot
 RUN ./RaspiQtCrossCompile.sh
 # Delete the source archive
 RUN rm -rf /QtCrossSourceCache
+# Copy the ssh key to image so that we can clone git repos
+COPY /home/twobtech/.ssh/id_ed25519.pub /root/.ssh/
+COPY /home/twobtech/.ssh/id_ed25519 /root/.ssh/

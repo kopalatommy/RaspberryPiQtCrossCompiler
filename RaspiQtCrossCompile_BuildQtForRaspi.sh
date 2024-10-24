@@ -69,3 +69,6 @@ fi
 # Clean up
 cd $BUILD_LOC
 rm -rf ${BUILD_LABEL}-build
+
+# Copy build files to device
+rsync -avz --rsync-path="sudo rsync" /path/to/qt-raspi/* <pi_username>@<pi_ip_address>:/usr/local/qt6
