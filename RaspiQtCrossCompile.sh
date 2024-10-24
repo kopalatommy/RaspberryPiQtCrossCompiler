@@ -149,6 +149,8 @@ if [[ $interactsWithDevice -eq 1 ]]; then
     # Move to the directory that will hold the sysroot
     cd ${basePath}/
 
+    echo -e "${BLUE}Copying the sysroot to ${basePath}${NC}"
+
     # Copy the sysroo from the target device
     rsync -avz --info=progress2 --copy-unsafe-links --rsync-path="sudo rsync" --delete $account@$deviceIP:/usr ${buildLabel}-sysroot
 
